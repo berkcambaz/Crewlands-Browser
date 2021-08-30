@@ -1,4 +1,5 @@
 import { gameplay } from "./gameplay.js";
+import { packet } from "./network/packet.js";
 import { renderer } from "./renderer.js";
 import { tilemap } from "./tilemap.js";
 import { panelTop } from "./ui/panel_top.js";
@@ -94,8 +95,14 @@ function Game() {
         });
 
     tilemap.generate(this.countries, this.provinces, this.countryCount, this.width, this.height);
-
-    this.changeCountry(this.countries[COUNTRY.GREEN]);
+    packet.syncWorld({
+      countries: this.countries,
+      provinces: this.provinces,
+      countryCount: this.countryCount,
+      width: this.width,
+      height: this.height
+    }, packet.SENDING);
+    //this.changeCountry(this.countries[COUNTRY.GREEN]);
   }
 
   this.start = function () {

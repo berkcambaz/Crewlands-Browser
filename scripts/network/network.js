@@ -1,4 +1,5 @@
 import { chat } from "../ui/chat.js";
+import { packet } from "./packet.js";
 
 function Network() {
   const ws = new WebSocket("ws://localhost:8080");
@@ -8,6 +9,9 @@ function Network() {
   const peer = { connection: undefined, channel: undefined }; // Used by the user
 
   let ownId = undefined;
+
+  this.isServer = false;
+  this.isClient = false;
 
   ws.onmessage = async function (ev) {
     const data = JSON.parse(ev.data);
@@ -28,7 +32,7 @@ function Network() {
           peers[data.from].channel = ev.channel;
           peers[data.from].channel.onopen = (ev) => { console.log(ev); }
           peers[data.from].channel.onclose = (ev) => { console.log(ev); }
-          peers[data.from].channel.onmessage = (ev) => { console.log(ev); }
+          peers[data.from].channel.onmessage = (ev) => { packet.handle(ev.data); }
         }
 
         await peers[data.from].connection.setRemoteDescription(data.offer);
@@ -48,17 +52,22 @@ function Network() {
 
   this.host = function () {
     peers = {};
+    this.isServer = true;
+    this.isClient = false;
   }
 
   this.join = async function (id) {
+    this.isServer = false;
+    this.isClient = true;
+
     peer.connection = new RTCPeerConnection();
     peer.connection.onicecandidate = (ev) => {
       if (ev.candidate) ws.send(JSON.stringify({ type: "ice-candidate", candidate: ev.candidate, to: id }))
     }
-    peer.channel = peer.connection.createDataChannel("channel");
+    peer.channel = peer.connection.createDataChannel("channel", { ordered: true });
     peer.channel.onopen = (ev) => { console.log(ev); }
     peer.channel.onclose = (ev) => { console.log(ev); }
-    peer.channel.onmessage = (ev) => { console.log(ev); }
+    peer.channel.onmessage = (ev) => { packet.handle(ev.data); }
 
     const offer = await peer.connection.createOffer();
     await peer.connection.setLocalDescription(offer);
@@ -66,9 +75,26 @@ function Network() {
     ws.send(JSON.stringify({ type: "join-request", offer: offer, to: id }));
   }
 
-  //this.send = function (packet) {
-  //  channel.send(JSON.stringify(packet));
-  //}
+  this.sendToServer = function (packet) {
+    packet = JSON.stringify(packet);
+    peer.channel.send(packet);
+  }
+
+  this.sendTo = function (packet, id) {
+
+  }
+
+  this.sendToExcept = function (packet, exceptId) {
+
+  }
+
+  this.sendToAll = function (packet) {
+    packet = JSON.stringify(packet);
+
+    for (const id in peers) {
+      peers[id].channel.send(packet);
+    }
+  }
 }
 
 export const network = new Network();
