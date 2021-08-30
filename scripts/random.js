@@ -29,6 +29,16 @@ function Random() {
       previousPercent += cases[i].percent;
     }
   }
+
+  this.id = function (length) {
+    const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-";
+    let id = "";
+
+    for (let i = 0; i < length; ++i)
+      id += characters[this.number(0, characters.length - 1)];
+
+    return id;
+  }
 }
 
 export const random = new Random();

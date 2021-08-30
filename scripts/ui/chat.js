@@ -1,4 +1,5 @@
 import { game } from "../game.js";
+import { network } from "../network/network.js";
 
 function Chat() {
   const panel = document.getElementById("chat");
@@ -42,7 +43,6 @@ function Chat() {
           if (history[historyIndex]) chatInput.value = history[historyIndex];
           break;
       }
-      console.log(historyIndex);
     });
   }
 
@@ -81,15 +81,24 @@ function Chat() {
       case "genmap":
         this._genmapCommand(command.slice(1));
         break;
+      case "host":
+        this._hostCommand();
+        break;
+      case "join":
+        this._joinCommand(command.slice(1));
+        break;
+      case "start":
+        this._startCommand();
+        break;
       default:
         break;
     }
   }
 
-  this._genmapCommand = function (command) {
-    const countryCount = parseInt(command[0]);
-    const width = parseInt(command[1]);
-    const height = parseInt(command[2]);
+  this._genmapCommand = function (parameters) {
+    const countryCount = parseInt(parameters[0]);
+    const width = parseInt(parameters[1]);
+    const height = parseInt(parameters[2]);
 
     if (countryCount < 2 || countryCount > 4) {
       this.insertMessage("Error: Country count must be 2-4!", true, "red");
@@ -107,6 +116,18 @@ function Chat() {
     }
 
     game.generate(countryCount, width, height);
+  }
+
+  this._hostCommand = function () {
+    network.host();
+  }
+
+  this._joinCommand = function (id) {
+    network.join(id);
+  }
+
+  this._startCommand = function () {
+    game.start();
   }
 }
 

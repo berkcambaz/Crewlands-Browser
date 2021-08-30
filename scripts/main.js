@@ -4,6 +4,7 @@ import { asset } from "./asset.js";
 import { input } from "./input.js";
 import { ui } from "./ui/ui.js";
 import { camera } from "./camera.js";
+import { random } from "./random.js";
 
 window.__DEV__ = true;
 
