@@ -105,15 +105,15 @@ function Chat() {
       return;
     }
 
-    //if (width < 10 || width > 25) {
-    //  this.insertMessage("Error: World width must be 10-25!", true, "red");
-    //  return;
-    //}
-    //
-    //if (height < 10 || height > 25) {
-    //  this.insertMessage("Error: World height must be 10-25!", true, "red");
-    //  return;
-    //}
+    if (width < 10 || width > 25) {
+      this.insertMessage("Error: World width must be 10-25!", true, "red");
+      return;
+    }
+
+    if (height < 10 || height > 25) {
+      this.insertMessage("Error: World height must be 10-25!", true, "red");
+      return;
+    }
 
     game.generate(countryCount, width, height);
   }

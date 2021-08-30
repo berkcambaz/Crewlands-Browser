@@ -1,4 +1,5 @@
 import { chat } from "../ui/chat.js";
+import { dataHandler } from "./data_handler.js";
 import { packet } from "./packet.js";
 
 function Network() {
@@ -76,8 +77,11 @@ function Network() {
   }
 
   this.sendToServer = function (packet) {
-    packet = JSON.stringify(packet);
-    peer.channel.send(packet);
+    packet = JSON.stringify(packet) + dataHandler.delimiter;
+    const chunks = dataHandler.chunk(packet);
+
+    for (let i = 0; i < chunks.length; ++i)
+      peer.channel.send(chunks[i]);
   }
 
   this.sendTo = function (packet, id) {
@@ -89,10 +93,12 @@ function Network() {
   }
 
   this.sendToAll = function (packet) {
-    packet = JSON.stringify(packet);
+    packet = JSON.stringify(packet) + dataHandler.delimiter;
+    const chunks = dataHandler.chunk(packet);
 
     for (const id in peers) {
-      peers[id].channel.send(packet);
+      for (let i = 0; i < chunks.length; ++i)
+        peers[id].channel.send(chunks[i]);
     }
   }
 }

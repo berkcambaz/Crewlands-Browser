@@ -1,4 +1,5 @@
 import { network } from "./network.js";
+import { dataHandler } from "./data_handler.js";
 
 function Packet() {
   this.SENDING = 0;
@@ -8,7 +9,8 @@ function Packet() {
   this.SYNC_WORLD = packetId++;
 
   this.handle = function (packet) {
-    packet = JSON.parse(packet);
+    dataHandler.push(packet);
+    if (packet) packet = dataHandler.getData();
     console.log(packet);
   }
 
@@ -18,7 +20,6 @@ function Packet() {
         network.sendToAll({ id: this.SYNC_WORLD, data: data });
         break;
       case this.RECEIVING:
-        data
         break;
     }
   }
