@@ -67,11 +67,14 @@ canvas {
 
 #panel--side {
   position: absolute;
-  top: 126px;
-  bottom: 155px;
+  bottom: 0;
+  left: 0;
+
+  width: 256px;
+  height: 360px;
   
   background-color: #ababab;
-  border-radius: 0 5px 5px 0;
+  border-radius: 0 5px 0 0;
   box-shadow: 0 0 10px 1px #000000;
 
   width: 256px;
@@ -138,45 +141,6 @@ canvas {
 .panel--side__action__overlay:active { 
   transition: 0ms;
   opacity: 0.5; 
-}
-
-#panel--bottom {
-  position: absolute;
-  bottom: 0;
-  
-  background-color: #ababab;
-  border-radius: 0 5px 0 0;
-  box-shadow: 0 0 10px 1px #000000;
-  
-  width: 236px;
-
-  padding: 10px;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.panel--bottom__col {
-  width: 118px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.panel--bottom__col > * {
-  margin: 2px 0;
-}
-
-.panel--bottom__button {
-  width: 59px;
-}
-
-.panel--bottom__colors {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 }
 
 #chat {

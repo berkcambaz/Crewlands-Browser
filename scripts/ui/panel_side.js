@@ -1,4 +1,5 @@
 import { util } from "../util.js";
+import { chat } from "./chat.js";
 
 function PanelSide() {
   const panel = document.getElementById("panel--side");
@@ -19,9 +20,11 @@ function PanelSide() {
       currentProvince = province;
       this.update(province);
       this.show();
+      chat.hide();
     } else {
       currentProvince = undefined;
       this.hide();
+      chat.show();
     }
   }
 
