@@ -65,17 +65,11 @@ function Game() {
   this.started = false;
 
   this.generate = function (countryCount, width, height) {
-    this.countries = [];
-    this.provinces = [];
-    this.countryCount = countryCount;
-    this.width = width;
-    this.height = height;
-    this.started = false;
+    const countries = [];
+    const provinces = [];
 
-    renderer.init(this.width, this.height);
-
-    for (let i = 0; i < this.countryCount; ++i)
-      this.countries.push({
+    for (let i = 0; i < countryCount; ++i)
+      countries.push({
         id: i,
         gold: 0,
         income: 0,
@@ -83,9 +77,9 @@ function Game() {
         manpower: 0
       });
 
-    for (let y = 0; y < this.height; ++y)
-      for (let x = 0; x < this.width; ++x)
-        this.provinces.push({
+    for (let y = 0; y < height; ++y)
+      for (let x = 0; x < width; ++x)
+        provinces.push({
           x: x,
           y: y,
           country: { id: COUNTRY.NONE },
@@ -94,15 +88,31 @@ function Game() {
           army: { id: COUNTRY.NONE, moved: false }
         });
 
-    tilemap.generate(this.countries, this.provinces, this.countryCount, this.width, this.height);
+    tilemap.generate(countries, provinces, countryCount, width, height);
+    this.display(countries, provinces, countryCount, width, height);
+
     packet.syncWorld({
-      countries: this.countries,
-      provinces: this.provinces,
-      countryCount: this.countryCount,
-      width: this.width,
-      height: this.height
+      countries: countries,
+      provinces: provinces,
+      countryCount: countryCount,
+      width: width,
+      height: height
     }, packet.SENDING);
-    //this.changeCountry(this.countries[COUNTRY.GREEN]);
+  }
+
+  this.display = function (countries, provinces, countryCount, width, height) {
+    this.countries = countries;
+    this.provinces = provinces;
+    this.countryCount = countryCount;
+    this.width = width;
+    this.height = height;
+    this.started = false;
+
+    renderer.init(this.width, this.height);
+
+    for (let y = 0; y < this.height; ++y)
+      for (let x = 0; x < this.width; ++x)
+        tilemap.draw(this.provinces[x + y * this.width]);
   }
 
   this.start = function () {

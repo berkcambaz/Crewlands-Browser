@@ -17,10 +17,6 @@ function Tilemap() {
 
     chooseProvinces(countries, provinces, origins, countryCount, width, height);
     sprinkleNature(provinces, width, height);
-
-    for (let y = 0; y < height; ++y)
-      for (let x = 0; x < width; ++x)
-        this.draw(provinces[x + y * width]);
   }
 
   const chooseOrigins = function (countryCount, width, height) {

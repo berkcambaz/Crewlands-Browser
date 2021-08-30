@@ -1,5 +1,6 @@
 import { network } from "./network.js";
 import { dataHandler } from "./data_handler.js";
+import { game } from "../game.js";
 
 function Packet() {
   this.SENDING = 0;
@@ -10,8 +11,14 @@ function Packet() {
 
   this.handle = function (packet) {
     dataHandler.push(packet);
-    if (packet) packet = dataHandler.getData();
-    console.log(packet);
+    packet = dataHandler.getData();
+    if (!packet) return;
+
+    switch (packet.id) {
+      case this.SYNC_WORLD:
+        this.syncWorld(packet.data, this.RECEIVING);
+        break;
+    }
   }
 
   this.syncWorld = function (data, state) {
@@ -20,6 +27,7 @@ function Packet() {
         network.sendToAll({ id: this.SYNC_WORLD, data: data });
         break;
       case this.RECEIVING:
+        game.display(data.countries, data.provinces, data.countryCount, data.width, data.height);
         break;
     }
   }
