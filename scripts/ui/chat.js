@@ -9,18 +9,40 @@ function Chat() {
   const messageLimit = 50;
   const messages = [];
 
+  const historyLimit = 50;
+  const history = [];
+  let historyIndex = 0;
+
   this.init = function () {
     this.show();
 
     chatInput.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter") {
-        const message = chatInput.value;
-        chatInput.value = "";
-        this.insertMessage(message, true)
+      switch (ev.key) {
+        case "Enter":
+          const message = chatInput.value;
+          chatInput.value = "";
+          this.insertMessage(message, true)
 
-        if (message.startsWith("/"))
-          this._parseCommand(message.substr(1));
+          if (message.startsWith("/"))
+            this._parseCommand(message.substr(1));
+
+          // Add the message to history since it's written by the user
+          history.push(message);
+          if (history.length > historyLimit)
+            history.shift().remove();
+          break;
+        case "ArrowUp":
+          ev.preventDefault(); // To put the cursor to the end of the string
+          if (--historyIndex < 0) ++historyIndex;
+          if (history[historyIndex]) chatInput.value = history[historyIndex];
+          break;
+        case "ArrowDown":
+          ev.preventDefault(); // To put the cursor to the end of the string
+          if (++historyIndex > history.length - 1) --historyIndex;
+          if (history[historyIndex]) chatInput.value = history[historyIndex];
+          break;
       }
+      console.log(historyIndex);
     });
   }
 
@@ -42,6 +64,7 @@ function Chat() {
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
     messages.push(messageElem);
+    historyIndex = messages.length;
     if (messages.length > messageLimit)
       messages.shift().remove();
   }

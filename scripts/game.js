@@ -1,4 +1,3 @@
-import { ai } from "./ai.js";
 import { gameplay } from "./gameplay.js";
 import { renderer } from "./renderer.js";
 import { tilemap } from "./tilemap.js";
@@ -101,15 +100,13 @@ function Game() {
 
   this.start = function () {
     this.started = true;
-
-    ai.chooseCapital();
   }
 
   this.changeCountry = function (country) {
     if (this.started) return;
 
     panelTop.changeCountry(country);
-    gameplay.changeCountry(country, this.countries.filter(value => value !== country));
+    gameplay.changeCountry(country);
   }
 }
 

@@ -1,10 +1,6 @@
 function Gameplay() {
-  this.playerCountry = undefined;
-  this.aiCountries = [];
+  this.changeCountry = function (country) {
 
-  this.changeCountry = function (playerCountry, aiCountries) {
-    this.playerCountry = playerCountry;
-    this.aiCountries = aiCountries;
   }
 }
 
