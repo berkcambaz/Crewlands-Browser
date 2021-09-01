@@ -7,24 +7,58 @@ function Packet() {
   this.RECEIVING = 1;
 
   let packetId = 0;
+  this.PLAYER_JOINED = packetId++;
+  this.PLAYER_LEFT = packetId++;
   this.SYNC_WORLD = packetId++;
 
   this.handle = function (packet) {
     dataHandler.push(packet);
     packet = dataHandler.getData();
     if (!packet) return;
+    console.log(packet);
 
     switch (packet.id) {
+      case this.PLAYER_JOINED:
+        this.playerJoined(packet.data, this.RECEIVING);
+        break;
+      case this.PLAYER_LEFT:
+        this.playerLeft(packet.data, this.RECEIVING);
+        break;
       case this.SYNC_WORLD:
         this.syncWorld(packet.data, this.RECEIVING);
         break;
     }
   }
 
-  this.syncWorld = function (data, state) {
+  this.playerJoined = function (data, state) {
+
+  }
+
+  this.playerLeft = function (data, state) {
+
+  }
+
+  /**
+   * 
+   * @param {{countries: any, provinces: any, countryCount: number, width: number, height: number}} data
+   * @param {number} state 
+   * @param {string} id Id of the player to send the packet.
+   */
+  this.syncWorld = function (data, state, id) {
     switch (state) {
       case this.SENDING:
-        network.sendToAll({ id: this.SYNC_WORLD, data: data });
+        data = {
+          countries: game.countries,
+          provinces: game.provinces,
+          countryCount: game.changeCountry,
+          width: game.width,
+          height: game.height
+        };
+
+        if (id === undefined)
+          network.sendToAll({ id: this.SYNC_WORLD, data: data });
+        else
+          network.sendTo({ id: this.SYNC_WORLD, data: data }, id);
         break;
       case this.RECEIVING:
         game.display(data.countries, data.provinces, data.countryCount, data.width, data.height);

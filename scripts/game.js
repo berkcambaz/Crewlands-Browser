@@ -97,7 +97,7 @@ function Game() {
       countryCount: countryCount,
       width: width,
       height: height
-    }, packet.SENDING);
+    }, packet.SENDING, undefined);
   }
 
   this.display = function (countries, provinces, countryCount, width, height) {

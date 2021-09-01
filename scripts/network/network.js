@@ -31,7 +31,7 @@ function Network() {
         peers[data.from].connection.ondatachannel = (ev) => {
           console.log(ev);
           peers[data.from].channel = ev.channel;
-          peers[data.from].channel.onopen = (ev) => { console.log(ev); }
+          peers[data.from].channel.onopen = (ev) => { packet.syncWorld(undefined, packet.SENDING, data.from); }
           peers[data.from].channel.onclose = (ev) => { console.log(ev); }
           peers[data.from].channel.onmessage = (ev) => { packet.handle(ev.data); }
         }
@@ -85,7 +85,11 @@ function Network() {
   }
 
   this.sendTo = function (packet, id) {
+    packet = JSON.stringify(packet) + dataHandler.delimiter;
+    const chunks = dataHandler.chunk(packet);
 
+    for (let i = 0; i < chunks.length; ++i)
+      peers[id].channel.send(chunks[i]);
   }
 
   this.sendToExcept = function (packet, exceptId) {
