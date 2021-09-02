@@ -77,7 +77,7 @@ function Packet() {
         data = {
           countries: game.countries,
           provinces: game.provinces,
-          countryCount: game.changeCountry,
+          countryCount: game.countryCount,
           width: game.width,
           height: game.height
         };
