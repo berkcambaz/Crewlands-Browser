@@ -39,6 +39,7 @@ function Packet() {
   this.playerJoined = function (data, state, exceptId) {
     switch (state) {
       case this.SENDING:
+        data = { id: exceptId }
         network.sendToExcept({ id: this.PLAYER_JOINED, data: data }, exceptId);
         break;
       case this.RECEIVING:
@@ -55,6 +56,7 @@ function Packet() {
   this.playerLeft = function (data, state, exceptId) {
     switch (state) {
       case this.SENDING:
+        data = { id: exceptId }
         network.sendToExcept({ id: this.PLAYER_LEFT, data: data }, exceptId);
         break;
       case this.RECEIVING:

@@ -31,7 +31,7 @@ function Network() {
         peers[data.from].connection.onconnectionstatechange = (ev) => {
           if (peers[data.from].connection.connectionState === "disconnected") {
             chat.insertMessage(`Player ${data.from} has left.`);
-            packet.playerLeft({ id: data.from }, packet.SENDING, data.from);
+            packet.playerLeft(undefined, packet.SENDING, data.from);
             peers[data.from].channel.close();
             peers[data.from].connection.close();
             delete peers[data.from];
@@ -42,7 +42,7 @@ function Network() {
           peers[data.from].channel = ev.channel;
           peers[data.from].channel.onopen = (ev) => {
             chat.insertMessage(`Player ${data.from} has joined.`);
-            packet.playerJoined({ id: data.from }, packet.SENDING, data.from);
+            packet.playerJoined(undefined, packet.SENDING, data.from);
             packet.syncWorld(undefined, packet.SENDING, data.from);
           }
           peers[data.from].channel.onmessage = (ev) => { packet.handle(ev.data); }

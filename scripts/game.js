@@ -91,13 +91,7 @@ function Game() {
     tilemap.generate(countries, provinces, countryCount, width, height);
     this.display(countries, provinces, countryCount, width, height);
 
-    packet.syncWorld({
-      countries: countries,
-      provinces: provinces,
-      countryCount: countryCount,
-      width: width,
-      height: height
-    }, packet.SENDING, undefined);
+    packet.syncWorld(undefined, packet.SENDING, undefined);
   }
 
   this.display = function (countries, provinces, countryCount, width, height) {
