@@ -1,6 +1,7 @@
 import { network } from "./network.js";
 import { dataHandler } from "./data_handler.js";
 import { game } from "../game.js";
+import { chat } from "../ui/chat.js";
 
 function Packet() {
   this.SENDING = 0;
@@ -30,12 +31,36 @@ function Packet() {
     }
   }
 
-  this.playerJoined = function (data, state) {
-
+  /**
+   * 
+   * @param {{id: string}} data 
+   * @param {*} state 
+   */
+  this.playerJoined = function (data, state, exceptId) {
+    switch (state) {
+      case this.SENDING:
+        network.sendToExcept({ id: this.PLAYER_JOINED, data: data }, exceptId);
+        break;
+      case this.RECEIVING:
+        chat.insertMessage(`Player ${data.id} has joined.`);
+        break;
+    }
   }
 
-  this.playerLeft = function (data, state) {
-
+  /**
+   * 
+   * @param {{id: string}} data 
+   * @param {*} state 
+   */
+  this.playerLeft = function (data, state, exceptId) {
+    switch (state) {
+      case this.SENDING:
+        network.sendToExcept({ id: this.PLAYER_LEFT, data: data }, exceptId);
+        break;
+      case this.RECEIVING:
+        chat.insertMessage(`Player ${data.id} has left.`);
+        break;
+    }
   }
 
   /**

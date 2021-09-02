@@ -29,10 +29,9 @@ function Network() {
 
         peers[data.from] = { connection: new RTCPeerConnection(), channel: undefined };
         peers[data.from].connection.onconnectionstatechange = (ev) => {
-          console.log(data.from);
-          console.log(peers[data.from]);
           if (peers[data.from].connection.connectionState === "disconnected") {
             chat.insertMessage(`Player ${data.from} has left.`);
+            packet.playerLeft({ id: data.from }, packet.SENDING, data.from);
             peers[data.from].channel.close();
             peers[data.from].connection.close();
             delete peers[data.from];
@@ -43,6 +42,7 @@ function Network() {
           peers[data.from].channel = ev.channel;
           peers[data.from].channel.onopen = (ev) => {
             chat.insertMessage(`Player ${data.from} has joined.`);
+            packet.playerJoined({ id: data.from }, packet.SENDING, data.from);
             packet.syncWorld(undefined, packet.SENDING, data.from);
           }
           peers[data.from].channel.onmessage = (ev) => { packet.handle(ev.data); }
@@ -104,7 +104,14 @@ function Network() {
   }
 
   this.sendToExcept = function (packet, exceptId) {
+    packet = JSON.stringify(packet) + dataHandler.delimiter;
+    const chunks = dataHandler.chunk(packet);
 
+    for (const id in peers) {
+      if (id !== exceptId)
+        for (let i = 0; i < chunks.length; ++i)
+          peers[id].channel.send(chunks[i]);
+    }
   }
 
   this.sendToAll = function (packet) {
