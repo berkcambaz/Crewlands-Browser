@@ -28,11 +28,23 @@ function Network() {
         if (!(Object.keys(peers).length < 4)) return;
 
         peers[data.from] = { connection: new RTCPeerConnection(), channel: undefined };
+        peers[data.from].connection.onconnectionstatechange = (ev) => {
+          console.log(data.from);
+          console.log(peers[data.from]);
+          if (peers[data.from].connection.connectionState === "disconnected") {
+            chat.insertMessage(`Player ${data.from} has left.`);
+            peers[data.from].channel.close();
+            peers[data.from].connection.close();
+            delete peers[data.from];
+          }
+        }
         peers[data.from].connection.ondatachannel = (ev) => {
           console.log(ev);
           peers[data.from].channel = ev.channel;
-          peers[data.from].channel.onopen = (ev) => { packet.syncWorld(undefined, packet.SENDING, data.from); }
-          peers[data.from].channel.onclose = (ev) => { console.log(ev); }
+          peers[data.from].channel.onopen = (ev) => {
+            chat.insertMessage(`Player ${data.from} has joined.`);
+            packet.syncWorld(undefined, packet.SENDING, data.from);
+          }
           peers[data.from].channel.onmessage = (ev) => { packet.handle(ev.data); }
         }
 
@@ -67,7 +79,6 @@ function Network() {
     }
     peer.channel = peer.connection.createDataChannel("channel", { ordered: true });
     peer.channel.onopen = (ev) => { console.log(ev); }
-    peer.channel.onclose = (ev) => { console.log(ev); }
     peer.channel.onmessage = (ev) => { packet.handle(ev.data); }
 
     const offer = await peer.connection.createOffer();
